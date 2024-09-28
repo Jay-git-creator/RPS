@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+    .game-card {
+        background-color: rgb(230, 255, 230);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        max-width: 90%;
+        width: 400px;
+        margin: 0 auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .outcome-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 15px;
+        color: rgb(0, 0, 0);
+        text-align: center;
+      }
+      .rpsbuttons {
+        background-color: green;
+        color: white;
+        border: none;
+        padding: 25px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 20px;
+        width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 10px;
+        transition: transform 0.2s ease-in-out;
+      }
+
+      .rpsbuttons:hover {
+        animation: shake 0.5s ease-in-out infinite;
+      }
+
+      @keyframes shake {
+        0% { transform: rotate(0deg); }
+        25% { transform: rotate(5deg); }
+        50% { transform: rotate(0deg); }
+        75% { transform: rotate(-5deg); }
+        100% { transform: rotate(0deg); }
+      }
+
+      .button-reset {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 80px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: rgb(139, 222, 100);
+        color: rgb(0, 0, 0);
+        border: none;
+        border-radius: 5px;
+        transition: transform 0.2s ease-in-out;
+      }
+
+      .button-reset:hover {
+        transform: scale(1.05);
+      }
+
+      .game-title {
+        text-align: center;
+        font-size: 28px;
+        color: rgb(0, 0, 0);
+      }
+    
+    </style>
+  </head>
+  <body>
+    <script>
+      let globalcount = JSON.parse(localStorage.getItem('score')) || {
+        player : 0,
+        computer : 0,
+        ties : 0
+        };
+
+      function pickComputerMove() {
+        let computerMove = '';
+        const randomNumber = Math.random();
+        if (randomNumber >=0 && randomNumber<(1/3)) {
+          computerMove = 'Rock';
+        } else if (randomNumber>= (1/3) && randomNumber < (2/3)) {
+          computerMove = 'Paper'
+        } else  {
+          computerMove = 'Scissors'
+        }
+        return computerMove;
+      }
+
+
+      function finalWinner(computerChoice,playerChoice) {
+        let localCount = {
+          player : 1,
+          computer : 0,
+          ties : 0
+        }
+
+        if (playerChoice == 'Rock' && computerChoice == 'Paper') {
+          localCount.player = 0;
+          localCount.computer = 1;
+        }
+        if (playerChoice == 'Paper' && computerChoice == 'Scissors') {
+          localCount.player = 0;
+          localCount.computer = 1;
+        }
+        if (playerChoice == 'Scissors' && computerChoice == 'Rock') {
+          localCount.player = 0;
+          localCount.computer = 1;
+        }
+        if (playerChoice == computerChoice) {
+          localCount.player = 0;
+          localCount.computer = 0;
+          localCount.ties = 1;
+        }
+        let alertMessage2 = '';
+        if (localCount.player == 1) {
+          alertMessage2 = '🏆 You 🏆';
+        } else if (localCount.computer == 1) {
+          alertMessage2 = '🏆 Computer 🏆';
+        } else {
+          alertMessage2 = '🤝 Tie 🤝';
+        }
+
+        globalcount.player += localCount.player;
+        globalcount.computer += localCount.computer;
+        globalcount.ties += localCount.ties;
+
+        localStorage.setItem('score',JSON.stringify(globalcount));
+
+        
+        let alert1 = `🖥️ choose ${computerChoice === 'Rock' ? '🪨' : computerChoice === 'Paper' ? '📄' : '✂️'}`;
+        let alert2 = alertMessage2;
+        let alert3 = `👤: ${globalcount.player}, 🖥️: ${globalcount.computer}, 🤝: ${globalcount.ties}`;
+        document.querySelector('.js-scoredisplay').innerHTML = `${alert1}<br><br>${alert2}<br><br>${alert3}`;
+
+      }
+
+      function resetScore() {
+        globalcount.player = 0;
+        globalcount.computer = 0;
+        globalcount.ties = 0;
+        localStorage.removeItem('score');
+        
+        let alert1 = 'Game has been restarted';
+        let alert2 = `Your Won: ${globalcount.player}, You Lost: ${globalcount.computer}, Ties: ${globalcount.ties}`;
+        document.querySelector('.js-scoredisplay').innerHTML = `${alert1}<br><br>${alert2}`;
+      }
+
+
+    </script>
+
+    <div class="game-card">
+      <h1 class="game-title">Rock Paper Scissors</h1>
+      <div class="button-container">
+        <button onclick="finalWinner(pickComputerMove(),'Rock')" class="rpsbuttons">🪨</button>
+        <button onclick="finalWinner(pickComputerMove(),'Paper')" class="rpsbuttons">📄</button>
+        <button onclick="finalWinner(pickComputerMove(),'Scissors')" class="rpsbuttons">✂️</button>
+      </div>
+      <p class="js-scoredisplay outcome-container"></p>
+      <button onclick="resetScore()" class="button-reset">Reset</button>
+      </div>
+
+  </body>
+</html>
+
+
+
